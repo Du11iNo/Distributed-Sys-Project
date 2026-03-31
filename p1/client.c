@@ -161,7 +161,11 @@ char *send_request(char *request, struct sockaddr_in *server_addr,
         char *ip = inet_ntoa(server_addr->sin_addr);
         short port = ntohs(server_addr->sin_port);
 
-        Connect(sock_dat, ip, port);
+        if (Connect(sock_dat, ip, port) < 0) {
+            print_log("Error: Could not connect to server for sending request");
+            exit(15);
+        }
+
         sent = sendStringTCP(sock_dat, request, strlen(request));
         if (sent < 0) {
             print_log("Error: Could not send request to server\n");
@@ -392,8 +396,8 @@ void *download_thread(struct sockaddr_in *p) {
                 sprintf(request, "GETFILE %s", filename);
                 int sock_dat = CreateTCPDataSocket();
 
-                if (!Connect(sock_dat, inet_ntoa(p->sin_addr),
-                             ntohs(p->sin_port))) {
+                if (Connect(sock_dat, inet_ntoa(p->sin_addr),
+                            ntohs(p->sin_port)) < 0) {
                     print_log("Error: Could not connect to server\n");
                     exit(16);
                 }

@@ -426,6 +426,8 @@ void ReceiveRequests(int sockTCP, int sockUDP) {
 
             // Receive the message
             received = recvStringTCP(s, bufferTCP, sizeof(bufferTCP));
+            if (received == 0)
+                continue;
 
             // Create a queue_item structure
             p = (queue_item *)malloc(sizeof(queue_item));
@@ -500,7 +502,7 @@ int main(int argc, char *argv[]) {
     // Initialize TCP and UDP sockets
     // TODO: TO BE COMPLETED BY STUDENT
 
-    sock_passive_TCP = CreateTCPDataSocket();
+    sock_passive_TCP = CreateTCPServerSocket(port);
     sock_UDP = CreateUDPDataSocket();
 
     // Initialize the queue
