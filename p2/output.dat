@@ -1,0 +1,22 @@
+Client: 2 reads WWW request: fileA T
+
+Client: 2 The file to download is fileA
+Client: 2 The download of file fileA will be performed using TCP protocol
+Client: 2 File fileA exists on the server.
+Client: 2 File fileA has a size of 6559 bytes.
+Client: 2 Opens output file fileA for writing.
+Client: 2 Requests a chunk of file fileA from offset 0 with size 1000 bytes
+Client: 2 Receives a chunk of file fileA of size 1000 bytes
+Client: 2 Requests a chunk of file fileA from offset 1000 with size 1000 bytes
+Client: 2 Receives a chunk of file fileA of size 1000 bytes
+Client: 2 Requests a chunk of file fileA from offset 2000 with size 1000 bytes
+Client: 2 Receives a chunk of file fileA of size 1000 bytes
+Client: 2 Requests a chunk of file fileA from offset 3000 with size 1000 bytes
+Client: 2 Receives a chunk of file fileA of size 1000 bytes
+Client: 2 Requests a chunk of file fileA from offset 4000 with size 1000 bytes
+Client: 2 Receives a chunk of file fileA of size 1000 bytes
+Client: 2 Requests a chunk of file fileA from offset 5000 with size 1000 bytes
+Client: 2 Receives a chunk of file fileA of size 1000 bytes
+Client: 2 Requests a chunk of file fileA from offset 6000 with size 559 bytes
+Client: 2 Receives a chunk of file fileA of size 559 bytes
+Client: 2 Finished downloading file fileA.
