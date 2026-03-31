@@ -504,7 +504,7 @@ int main(int argc, char *argv[]) {
     // TODO: TO BE COMPLETED BY STUDENT
 
     sock_passive_TCP = CreateTCPServerSocket(port);
-    sock_UDP = CreateUDPDataSocket();
+    sock_UDP = CreateUDPSocket(port);
 
     // Initialize the queue
     init_queue(&request_queue, queue_size);
