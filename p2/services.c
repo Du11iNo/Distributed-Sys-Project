@@ -142,7 +142,7 @@ Result *getchunk_1_svc(param1 *fileitem, struct svc_req *request) {
     if (offset < 0 || remaining < 0) {
         error_and_close_file("Error: Offset or Remaining cannot be negative",
                              fd, &res);
-        reutnr & res;
+        return &res;
     }
 
     if (lseek(fd, offset, SEEK_SET) < 0) {
