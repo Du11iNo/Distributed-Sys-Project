@@ -305,6 +305,7 @@ void *Worker(int *id) {
             if (file_exists(filepath)) {
                 send_file(filepath, req->s);
             }
+            continue;
         } else if (strcmp(cmd, "GETCHUNK") == 0) {
             // TODO: TO BE COMPLETED BY STUDENT
 
