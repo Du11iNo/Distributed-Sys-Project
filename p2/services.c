@@ -73,11 +73,11 @@ Result *getsize_1_svc(filename_string *fname, struct svc_req *request) {
     // returning the appropriate result in res
     // TODO: TO BE COMPLETED BY STUDENT
 
-    size = get_file_size(filename);
     sprintf(filename, "%s/%s", documentroot, *fname);
+    size = get_file_size(filename);
 
     if (size < 0) {
-        res.case_id = 0;
+        res.case_id = 3;
         res.Result_u.err = "Error: Missing file\n";
     } else {
         res.case_id = 1;
