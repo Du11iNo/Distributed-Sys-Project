@@ -22,41 +22,41 @@ all : $(CLIENT) $(SERVER)
 #**************************************************
 
 $(CLIENT) : client.o srvwww_clnt.o srvwww_xdr.o util.o
-    $(CC) $(CFLAGS) -o $(CLIENT) client.o srvwww_clnt.o srvwww_xdr.o util.o $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $(CLIENT) client.o srvwww_clnt.o srvwww_xdr.o util.o $(LDFLAGS)
 
 $(SERVER) : srvwww_svc.o srvwww_xdr.o util.o services.o
-    $(CC) $(CFLAGS) -o $(SERVER) srvwww_svc.o srvwww_xdr.o util.o services.o $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $(SERVER) srvwww_svc.o srvwww_xdr.o util.o services.o $(LDFLAGS)
 
 srvwww_svc.o : srvwww_svc.c srvwww.h
-    $(CC) $(CFLAGS) -c srvwww_svc.c
+	$(CC) $(CFLAGS) -c srvwww_svc.c
 
 services.o : services.c srvwww.h util.h
-    $(CC) $(CFLAGS) -c services.c
+	$(CC) $(CFLAGS) -c services.c
 
 srvwww_clnt.o : srvwww_clnt.c srvwww.h
-    $(CC) $(CFLAGS) -c srvwww_clnt.c
+	$(CC) $(CFLAGS) -c srvwww_clnt.c
 
 srvwww_xdr.o : srvwww_xdr.c srvwww.h
-    $(CC) $(CFLAGS) -c srvwww_xdr.c
+	$(CC) $(CFLAGS) -c srvwww_xdr.c
 
 client.o : client.c srvwww.h util.h
-    $(CC) $(CFLAGS) -c client.c
+	$(CC) $(CFLAGS) -c client.c
 
 util.o : util.c util.h srvwww.h
-    $(CC) $(CFLAGS) -c util.c
+	$(CC) $(CFLAGS) -c util.c
 
 srvwww.h srvwww_svc.c : srvwww.x
-    $(RPCGEN) $<
-    python3 apply_srvwww_svc_patches.py
+	$(RPCGEN) $<
+	python3 apply_srvwww_svc_patches.py
 
 #**************************************************
 # Utilities
 #**************************************************
 
 clean :
-    rm -f *.o
+	rm -f *.o
 
 cleanall : clean
-    rm -f srvwww_*
-    rm -f srvwww.h
-    rm -f client server
+	rm -f srvwww_*
+	rm -f srvwww.h
+	rm -f client server
