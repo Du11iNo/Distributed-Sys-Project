@@ -190,7 +190,7 @@ char *send_request(char *request, struct sockaddr_in *server_addr,
             exit(15);
         }
     }
-    CloseSocket(sock_dat);
+    close(sock_dat);
     s = (char *)malloc(MAX_RESPONSE_SIZE * sizeof(char));
     if (s == NULL) {
         print_log(
@@ -542,5 +542,4 @@ void main(int argc, char *argv[]) {
     for (i = 0; i < nthreads; i++) {
         pthread_join(th[i], NULL);
     }
-    free(th);
 }
