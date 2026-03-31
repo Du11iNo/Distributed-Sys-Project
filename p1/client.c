@@ -409,9 +409,9 @@ void *download_thread(struct sockaddr_in *p) {
                                                      sizeof(buffer))) > 0) {
                         write(fd_out, buffer, received);
                     }
-                    CloseSocket(fd_out);
+                    close(fd_out);
                 }
-                close(sock_dat);
+                CloseSocket(sock_dat);
             } else // download is via UDP
             {
                 // Prepare request to obtain file size, and send it
