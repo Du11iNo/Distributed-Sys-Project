@@ -226,6 +226,7 @@ void download_multimedia(struct sockaddr_in *p, char *filename) {
     char *s;                // to store the server response
     long int file_size;     // to store the size of the file to download
     long int offset;        // to store the offset inside the file
+    int chunk_size = chunk_max_size;
     char *pos;
     char *token;
 
@@ -278,22 +279,21 @@ void download_multimedia(struct sockaddr_in *p, char *filename) {
                             while (offset < file_size) {
                                 // Prepare request to obtain the chunk and send
                                 // it
-                                if ((offset + chunk_max_size) > file_size)
-                                    chunk_max_size =
+                                if ((offset + chunk_size) > file_size)
+                                    chunk_size =
                                         file_size - offset; // adjust chunk size
                                                             // at end of file
 
                                 sprintf(request, "GETCHUNK %s %ld %d", token,
-                                        offset, chunk_max_size);
+                                        offset, chunk_size);
                                 s = send_request(request, p, FALSE);
 
                                 if (s != NULL) {
                                     // Write the received chunk to the file
-                                    write(fd_out, s, chunk_max_size);
+                                    write(fd_out, s, chunk_size);
                                     free(s);
-                                    offset +=
-                                        chunk_max_size; // increment offset
-                                } else                  // error obtaining chunk
+                                    offset += chunk_size; // increment offset
+                                } else // error obtaining chunk
                                 {
                                     print_log("Error: Could not obtain chunk "
                                               "of file %s\n",
@@ -336,6 +336,7 @@ void *download_thread(struct sockaddr_in *p) {
     char *filename = NULL;          // to store the filename
     unsigned char is_stream; // to indicate whether the request uses TCP or UDP
     long int offset;         // to store the file offset
+    int chunk_size = chunk_max_size;
 
     // Lock before reading a line from the request file
     pthread_mutex_lock(&mutex_req_file);
@@ -447,15 +448,15 @@ void *download_thread(struct sockaddr_in *p) {
                             // TODO: TO BE COMPLETED BY STUDENT
 
                             sprintf(request, "GETCHUNK %s %ld %d", filename,
-                                    offset, chunk_max_size);
+                                    offset, chunk_size);
                             s = send_request(request, p, FALSE);
 
                             if (s != NULL) {
                                 // Write received chunk to file
-                                write(fd_out, s, chunk_max_size);
+                                write(fd_out, s, chunk_size);
                                 free(s);
-                                offset += chunk_max_size; // increment offset
-                            } else // error obtaining chunk
+                                offset += chunk_size; // increment offset
+                            } else                    // error obtaining chunk
                             {
                                 print_log("Error: Could not obtain chunk of "
                                           "file %s\n",

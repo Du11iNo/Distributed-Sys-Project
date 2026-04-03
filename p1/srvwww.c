@@ -160,7 +160,7 @@ long get_file_size(const char *filename) {
 
 char *get_file_chunk(const char *filename, int offset, int size) {
     int fd;
-    static char *buffer = NULL;
+    char *buffer = NULL;
 
     sem_wait(&semdesc); // Wait until a descriptor is available
     if ((fd = open(filename, O_RDONLY)) < 0) {
