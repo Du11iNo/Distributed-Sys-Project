@@ -302,10 +302,7 @@ void *Worker(int *id) {
         } else if (strcmp(cmd, "GETFILE") == 0) {
             // TODO: TO BE COMPLETED BY STUDENT
 
-            if (file_exists(filepath)) {
-                send_file(filepath, req->s);
-            }
-            continue;
+            send_file(filepath, req->s);
         } else if (strcmp(cmd, "GETCHUNK") == 0) {
             // TODO: TO BE COMPLETED BY STUDENT
 
