@@ -150,8 +150,10 @@ public class Client {
                     msg = "Client_" + String.valueOf(id) + " GETCHUNK " + filename + " " + String.valueOf(offset) + " "
                             + String.valueOf(maxChunkSize);
                     channel.basicPublish("", QUEUE_NAME, null, msg.getBytes("UTF-8"));
-                    stream.write(cli.getChunk());
-                    offset += maxChunkSize;
+                    byte[] chunk = cli.getChunk();
+                    if (chunk == null || chunk.length == 0) break;
+                    stream.write(chunk);
+                    offset += chunk.length;
                 }
 
                 processTags(channel, cli, filename, download_directory);
