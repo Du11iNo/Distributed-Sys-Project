@@ -177,9 +177,9 @@ class Worker extends Thread {
                         // Prepare the line to be written
                         // TODO
                         if (parts.length < 4)
-                            log_line = date.toString() + ", " + parts[0] + parts[1] + parts[2];
+                            log_line = date.toString() + ", " + parts[0] + " " + parts[1] + " " + parts[2];
                         else
-                            log_line = date.toString() + ", " + parts[0] + parts[1] + parts[2] + parts[3] + parts[4];
+                            log_line = date.toString() + ", " + parts[0] + " " + parts[1] + " " + parts[2] + " " + parts[3] + " " + parts[4];
 
                         BufferedWriter bw = new BufferedWriter(new FileWriter(log_file, true));
                         bw.write(log_line + System.lineSeparator());
@@ -254,9 +254,9 @@ public class SrvWWW {
         // Create the Worker threads and start them
         workers = new Worker[num_workers];
         // TODO
-        for (Worker worker : workers) {
-            worker = new Worker(internal_queue, argv[2], log_filename);
-            worker.start();
+        for (int i = 0; i < num_workers; i++) {
+            workers[i] = new Worker(internal_queue, argv[2], log_filename);
+            workers[i].start();
         }
 
         // Create the query receiver thread and start it
