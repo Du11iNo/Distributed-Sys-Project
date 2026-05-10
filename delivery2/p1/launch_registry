@@ -1,2 +1,2 @@
 #!/usr/bin/sh
-CLASSPATH=classes rmiregistry
+CLASSPATH=classes rmiregistry &
