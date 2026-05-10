@@ -151,7 +151,8 @@ public class Client {
                             + String.valueOf(maxChunkSize);
                     channel.basicPublish("", QUEUE_NAME, null, msg.getBytes("UTF-8"));
                     byte[] chunk = cli.getChunk();
-                    if (chunk == null || chunk.length == 0) break;
+                    if (chunk == null || chunk.length == 0)
+                        break;
                     stream.write(chunk);
                     offset += chunk.length;
                 }
@@ -201,21 +202,18 @@ public class Client {
                     }
                     image_name = aux.toString().trim(); // Get the image name
                     // TODO
+
                     try {
-                        URI image = new URI(image_name);
+                        String msg = "Client_" + String.valueOf(id) + " EXISTFILE " + image_name;
 
-                        InputStream in = image.toURL().openStream();
-                        image_name = image_name.substring(image_name.lastIndexOf("/") + 1);
-                        FileOutputStream out = new FileOutputStream(image_name);
+                        channel.basicPublish("", QUEUE_NAME, null, msg.getBytes("UTF-8"));
 
-                        byte[] buffer = new byte[4096];
-                        int read = 0;
-
-                        while ((read = in.read(buffer)) != -1) {
-                            out.write(buffer, 0, read);
+                        if (!cli.getExistFile()) {
+                            break;
                         }
-                        break;
-                    } catch (URISyntaxException e) {
+
+                        downloadFile(channel, cli, image_name, download_directory);
+                    } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
                 }
