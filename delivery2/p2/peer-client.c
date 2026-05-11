@@ -90,6 +90,7 @@ int main(int argc, char *argv[]) {
 
     if (result == -1) {
         perror("When connecting to server");
+        Close(tcp_socket);
         exit(1);
     }
 
@@ -104,6 +105,7 @@ int main(int argc, char *argv[]) {
 
     if (res == JOIN_ERR) {
         perror("On registering in server");
+        Close(tcp_socket);
         exit(1);
     } else if (res == CMD_OK) {
         printf("Registered succesfully to server\n");
@@ -112,6 +114,10 @@ int main(int argc, char *argv[]) {
 
     // Print a prompt to invite to write
     printf("\n%s>", nick);
+
+    // ADDED Julian Rumi
+    pong_interval.tv_sec = atoi(argv[5]);
+    pong_interval.tv_usec = 0;
 
     // And we enter the waiting loop
     while (1) {
@@ -131,21 +137,26 @@ int main(int argc, char *argv[]) {
         // arrive over the UDP socket
 
         // ADDED: Julian Rumi
-        pong_interval.tv_sec = atoi(argv[5]);
-        pong_interval.tv_usec = 0;
 
-        select(max + 1, &listen, NULL, NULL, &pong_interval);
+        int timed_out = select(max + 1, &listen, NULL, NULL, &pong_interval);
 
-        // ADDED: Julian Rumi
-        tcp_socket = CreateTCPDataSocket();
-        result = Connect(tcp_socket, ip, broker_port);
-        if (result == -1)
-            perror("On connecting to server");
-        SendByte(tcp_socket, PONG_CMD);
-        SendShort(tcp_socket, strlen(nick));
-        SendString(tcp_socket, nick);
-        log_pong_sent(nick);
-        Close(tcp_socket);
+        if (timed_out == 0) {
+            pong_interval.tv_sec = atoi(argv[5]);
+            pong_interval.tv_usec = 0;
+
+            // Send PONG
+            tcp_socket = CreateTCPDataSocket();
+            result = Connect(tcp_socket, ip, broker_port);
+            if (result == -1)
+                perror("On connecting to server");
+            SendByte(tcp_socket, PONG_CMD);
+            SendShort(tcp_socket, strlen(nick));
+            SendString(tcp_socket, nick);
+            log_pong_sent(nick);
+            Close(tcp_socket);
+
+            continue;
+        }
 
         // When exiting, something has happened
         if (FD_ISSET(udp_socket, &listen)) {
@@ -196,6 +207,7 @@ void read_and_process_keyboard(int udp_socket, char *ip, int port) {
 
         if (result == -1) {
             perror("Could not connect to server");
+            Close(tcp_socket);
             return;
         }
 
@@ -240,6 +252,7 @@ void read_and_process_keyboard(int udp_socket, char *ip, int port) {
 
             if (result == -1) {
                 perror("When connecting to server");
+                Close(tcp_socket);
                 return;
             }
 
@@ -251,6 +264,7 @@ void read_and_process_keyboard(int udp_socket, char *ip, int port) {
 
             if (res == (char)QUERY_ERR) {
                 printf("Could not find user '%s'\n", target);
+                Close(tcp_socket);
                 return;
             }
 
@@ -270,6 +284,7 @@ void read_and_process_keyboard(int udp_socket, char *ip, int port) {
 
             if (result == -1) {
                 perror("Could not connect to server");
+                Close(tcp_socket);
                 return;
             }
 
@@ -283,6 +298,7 @@ void read_and_process_keyboard(int udp_socket, char *ip, int port) {
                 perror("You are not registered to this server. Quitting...");
             }
 
+            printf("Quitting...\n");
             Close(udp_socket);
             exit(0);
         } else {
@@ -299,7 +315,8 @@ void read_and_process_keyboard(int udp_socket, char *ip, int port) {
         // but first we check if they were actually assigned
         // before these values
         if (strcmp(destination_ip, "Unassigned") == 0) {
-            printf("ERROR: before sending message you must use the command\n");
+            printf("ERROR: before sending message you must use the command "
+                   "/CHAT\n");
             return;
         }
         // If everything goes well, we send the message,
@@ -308,14 +325,36 @@ void read_and_process_keyboard(int udp_socket, char *ip, int port) {
         // TODO
         // Create a buffer with the message to send and send it
 
+        // ADDED Julian Rumi
+        tcp_socket = CreateTCPDataSocket();
+        result = Connect(tcp_socket, ip, port);
+
+        if (result == -1) {
+            perror("When connecting to server");
+            Close(tcp_socket);
+            return;
+        }
+
+        SendByte(tcp_socket, QUERY_CMD);
+        SendShort(tcp_socket, strlen(target));
+        SendString(tcp_socket, target);
+
+        res = ReadByte(tcp_socket);
+
+        if (res == (char)QUERY_ERR) {
+            printf("User %s has disconnected from the system.\n", target);
+            strcpy(destination_ip, "Unassigned");
+            destination_port = 0;
+            Close(tcp_socket);
+            return;
+        }
+
         message_to_send = (char *)malloc(MAX_MSG_SIZE);
         sprintf(message_to_send, "%s> %s", nick, line);
         sendto(udp_socket, message_to_send, strlen(message_to_send), 0,
                (struct sockaddr *)&target_dir, sizeof(target_dir));
         free(message_to_send);
     }
-
-    // Close(tcp_socket);
 }
 
 int get_max(int a, int b) {
